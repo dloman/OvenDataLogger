@@ -2,7 +2,7 @@
 
 import glob
 import serial
-import datetime
+import time
 
 ################################################################################
 ################################################################################
@@ -26,18 +26,23 @@ if __name__ == "__main__":
     print "ERROR: Couldnt Connect to serial"
     exit()
 
-  with open('OvenData' + str(datetime.date.today()) + '.csv', 'w') as Output:
-    while True:
+  Running = True
+  with open('OvenData' + time.asctime().replace(' ','-') + '.csv', 'w') as Output:
+    while Running:
       try:
         Data = Serial.readline()
 
-        if len(Data) > 0:
+        if len(Data) > 2:
           SplitData = Data.split(',')
           if len(SplitData) > 1:
             Output.write(Data)
             Output.flush()
           else:
             print Data
+        else:
+          if "Reflow is done!" in Data:
+            Running = False
+
 
       except KeyboardInterrupt:
         exit()
